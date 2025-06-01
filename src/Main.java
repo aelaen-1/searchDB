@@ -3,7 +3,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
-        System.out.println("Type the path of the folder to index :");
+        System.out.println("Type the path of the folder you want to index :");
         String  folderPath = sc.nextLine();
 
         Indexer indexer = new Indexer();

@@ -1,6 +1,7 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class FileUtils {
 
@@ -8,9 +9,12 @@ public class FileUtils {
     public static List<File> listTxtFiles(String folderPath) {
         List<File> txtFiles = new ArrayList<>();
         File folder = new File(folderPath);
-        if (!folder.exists() || !folder.isDirectory()) {
-            System.out.println("Le dossier spécifié n'existe pas ou n'est pas un dossier.");
-            return txtFiles;
+        while (!folder.exists() || !folder.isDirectory()) {
+            System.out.println("This folder does not exist, or it's not a directory. " +
+                   "Type the path of the folder you want to index :");
+            Scanner sc = new Scanner(System.in);
+            folderPath = sc.nextLine();
+            folder = new File (folderPath);
         }
 
         File[] allFiles = folder.listFiles();

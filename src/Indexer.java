@@ -1,6 +1,6 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.nio.file.Files;
 import java.io.IOException;
 import java.util.*;
 
@@ -51,11 +51,11 @@ public class Indexer {
         Map<String, Integer> fileMap = index.get(word);
         // converts map to list, to sort them according to the nb of occurences
         List<Map.Entry<String,Integer>> sortedFiles = new ArrayList<>(fileMap.entrySet());
-        sortedFiles.sort((a, b) -> b.getValue - a.getValue());
+        sortedFiles.sort((a, b) -> b.getValue() - a.getValue());
 
         System.out.println("Results for '" + word + "':");
         for (Map.Entry<String, Integer> entry : sortedFiles){
-            System.out.println(" " + entry.getKey() + " : " + entry.getValue() + " occurence(s)");
+            System.out.println(entry.getKey() + " : " + entry.getValue() + " occurence(s)");
         }
     }
 }
