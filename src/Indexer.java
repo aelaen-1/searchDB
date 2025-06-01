@@ -5,51 +5,57 @@ import java.io.IOException;
 import java.util.*;
 
 public class Indexer {
-
+    // <word, <filename, word occurences>>
     private Map<String, Map<String, Integer>> index = new HashMap<>();
 
-    public void indexerDossier(String dossierPath) {
-        List<File> fichiersTxt = FileUtils.listerFichiersTxt(dossierPath);
+    // index all files in folder
+    public void indexFolder(String folderPath){
+        List<File> txtFiles = FileUtils.listTxtFiles(folderPath);
 
-        for (File fichier : fichiersTxt) {
-            indexerFichier(fichier);
+        for (File file : txtFiles){
+            indexFile(file);
         }
     }
+    //index a single file
+    private void indexFile(File file) {
+        try {
+            List<String> lines = Files.readAllLines(file.toPath());
 
-    private void indexerFichier(File fichier) {
-        try (BufferedReader br = new BufferedReader(new FileReader(fichier))) {
-            String ligne;
-            while ((ligne = br.readLine()) != null) {
-                String[] mots = ligne.toLowerCase().split("\\W+");
-                for (String mot : mots) {
-                    if (mot.isEmpty()) continue;
+            for (String line : lines) {
+                // "\\": non alphanumeric char, "+" : one or many chars
+                String[] words = line.toLowerCase().split("\\W+");
 
-                    Map<String, Integer> fichiersMap = index.getOrDefault(mot, new HashMap<>());
-                    int count = fichiersMap.getOrDefault(fichier.getName(), 0);
-                    fichiersMap.put(fichier.getName(), count + 1);
-                    index.put(mot, fichiersMap);
+                for (String word : words) {
+                    if (word.isEmpty()) continue;
+                    // filemap is <filename, occurences>
+                    // index.getordefautl() return the <filename, occurence> in index
+                    Map<String, Integer> fileMap = index.getOrDefault(word, new HashMap<>());
+                    // return the occurence in <filename, occurence>
+                    int count = fileMap.getOrDefault(file.getName(), 0);
+                    fileMap.put(file.getName(), count + 1);
+                    index.put(word, fileMap);
                 }
             }
+
         } catch (IOException e) {
-            System.out.println("Erreur lecture fichier : " + fichier.getName());
+            System.out.println("Error: cannot read file " + file.getName());
         }
     }
 
-    public void rechercherMot(String mot) {
-        mot = mot.toLowerCase();
-        if (!index.containsKey(mot)) {
-            System.out.println("Mot '" + mot + "' non trouvé dans les fichiers indexés.");
-            return;
+    public void searchWord(String word){
+        word = word.toLowerCase();
+        if (!index.containsKey(word)){
+            System.out.println("Can't find word '" + word + "' in indexed files.");
+            return ;
         }
+        Map<String, Integer> fileMap = index.get(word);
+        // converts map to list, to sort them according to the nb of occurences
+        List<Map.Entry<String,Integer>> sortedFiles = new ArrayList<>(fileMap.entrySet());
+        sortedFiles.sort((a, b) -> b.getValue - a.getValue());
 
-        Map<String, Integer> fichiersMap = index.get(mot);
-
-        List<Map.Entry<String, Integer>> sortedFiles = new ArrayList<>(fichiersMap.entrySet());
-        sortedFiles.sort((a, b) -> b.getValue() - a.getValue());
-
-        System.out.println("Résultats pour '" + mot + "' :");
-        for (Map.Entry<String, Integer> entry : sortedFiles) {
-            System.out.println("  " + entry.getKey() + " : " + entry.getValue() + " occurrence(s)");
+        System.out.println("Results for '" + word + "':");
+        for (Map.Entry<String, Integer> entry : sortedFiles){
+            System.out.println(" " + entry.getKey() + " : " + entry.getValue() + " occurence(s)");
         }
     }
 }

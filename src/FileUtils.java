@@ -3,22 +3,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileUtils {
-    public static List<File> listerFichiersTxt(String dossierPath) {
-        List<File> fichiersTxt = new ArrayList<>();
-        File dossier = new File(dossierPath);
-        if (!dossier.exists() || !dossier.isDirectory()) {
+
+    // retrieve all txt files folder
+    public static List<File> listTxtFiles(String folderPath) {
+        List<File> txtFiles = new ArrayList<>();
+        File folder = new File(folderPath);
+        if (!folder.exists() || !folder.isDirectory()) {
             System.out.println("Le dossier spécifié n'existe pas ou n'est pas un dossier.");
-            return fichiersTxt;
+            return txtFiles;
         }
 
-        File[] fichiers = dossier.listFiles();
-        if (fichiers != null) {
-            for (File f : fichiers) {
+        File[] allFiles = folder.listFiles();
+        if (allFiles != null) {
+            for (File f : allFiles) {
                 if (f.isFile() && f.getName().toLowerCase().endsWith(".txt")) {
-                    fichiersTxt.add(f);
+                    txtFiles.add(f);
                 }
             }
         }
-        return fichiersTxt;
+        return txtFiles;
     }
 }
